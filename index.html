@@ -1074,6 +1074,32 @@ function restaurarPadroes() {
     document.getElementById('cprb').disabled = false;
     calcular();
 }
+
+// Função para garantir tooltips em todos os ícones, inclusive os criados dinamicamente
+function anexarTooltips() {
+    document.querySelectorAll('.tooltip-icon').forEach(icon => {
+        // Remove listeners antigos para evitar duplicação
+        icon.removeEventListener('mouseenter', tooltipEnterHandler);
+        icon.removeEventListener('mouseleave', hideTooltip);
+        // Adiciona novos
+        icon.addEventListener('mouseenter', tooltipEnterHandler);
+        icon.addEventListener('mouseleave', hideTooltip);
+    });
+}
+
+// Handler separado para usar na função acima
+function tooltipEnterHandler(e) {
+    showTooltip(e, e.currentTarget.getAttribute('data-tooltip'));
+}
+
+// Chama após qualquer alteração que possa modificar os spans
+document.addEventListener('DOMContentLoaded', anexarTooltips);
+// E sempre que o regime mudar
+function ajustarRegime() {
+    // ... código existente ...
+    anexarTooltips(); // <-- adicione esta linha no final da função
+}
+ 
 </script>
 </body>
 </html>
