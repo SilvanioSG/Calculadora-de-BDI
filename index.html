@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDI Pro | Silvanio Gois - Engenharia de Custos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --cor-mestra: rgb(39, 98, 141);
+            --cor-calcular: #2c3e50;
+            --cor-limpar: #e67e22;
+            --cor-imprimir: #27ae60;
+            --cor-padrao: #7f8c8d;
+            --bg-light: #f8f9fa;
+            --texto: #333;
+            --borda-erro: #e74c3c;
+            --aviso-bg: #fff3cd;
+            --aviso-border: #ffeeba;
+            --aviso-texto: #856404;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif; 
+            background: var(--bg-light); 
+            margin: 0; 
+            color: var(--texto); 
+            line-height: 1.4;
+        }
+
+        /* CABEÇALHO */
+        header { 
+            background: var(--cor-mestra); 
+            color: white; 
+            padding: 15px 5%; 
+            display: flex; 
+            align-items: center; 
+            gap: 20px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            flex-wrap: wrap;
+        }
+
+        .foto-perfil {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid white;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+        }
+
+        .header-info h1 { margin: 0; font-size: 1.5rem; }
+        .header-info h2 { margin: 0; font-size: 1rem; font-weight: normal; opacity: 0.9; }
+        
+        .btn-whatsapp {
+            display: inline-block;
+            background: #25d366;
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            width: fit-content;
+            transition: 0.3s;
+        }
+        .btn-whatsapp:hover { background: #128c7e; transform: scale(1.05); }
+
+        /* LAYOUT PRINCIPAL */
+        .container { 
+            max-width: 1300px; 
+            margin: 1.5rem auto; 
+            padding: 0 15px; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 1.5rem; 
+        }
+
+        .card { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05); 
+        }
+
+        h3 { 
+            color: var(--cor-mestra); 
+            border-bottom: 2px solid #eee; 
+            padding-bottom: 8px; 
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tooltip-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: #ccc;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 0.7rem;
+            line-height: 18px;
+            cursor: help;
+            position: relative;
+        }
+
+        /* Tooltip customizado via JavaScript */
+        .custom-tooltip {
+            position: fixed;
+            background: #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            max-width: 300px;
+            width: max-content;
+            max-width: min(300px, 90vw);
+            white-space: normal;
+            word-wrap: break-word;
+            z-index: 10000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            pointer-events: none;
+            transition: opacity 0.15s;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .custom-tooltip.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .custom-tooltip::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            pointer-events: none;
+        }
+        .custom-tooltip.top::before {
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-color: #333;
+            border-top: none;
+        }
+        .custom-tooltip.bottom::before {
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top-color: #333;
+            border-bottom: none;
+        }
+        .custom-tooltip.left::before {
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-right-color: #333;
+            border-left: none;
+        }
+        .custom-tooltip.right::before {
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: #333;
+            border-right: none;
+        }
+
+        .grid-inputs { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 15px; 
+        }
+
+        .input-group { 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        label { 
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            margin-bottom: 3px; 
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        input, select { 
+            padding: 8px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            font-size: 0.9rem; 
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--cor-mestra);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(39,98,141,0.1);
+        }
+
+        input.erro {
+            border-color: var(--borda-erro);
+            background-color: #fdf3f2;
+        }
+
+        .input-group small {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 2px;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        /* Avisos contextuais */
+        .aviso {
+            background: var(--aviso-bg);
+            border: 1px solid var(--aviso-border);
+            color: var(--aviso-texto);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin: 10px 0 0;
+            grid-column: span 2;
+        }
+        .aviso i {
+            margin-right: 6px;
+        }
+
+        /* Checkbox para desoneração */
+        .checkbox-group {
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .botoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button { 
+            flex: 1 1 auto;
+            background: var(--cor-calcular); 
+            color: white; 
+            border: none; 
+            padding: 12px 15px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 0.95rem; 
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 120px;
+        }
+        button:hover { 
+            filter: brightness(1.1); 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-limpar { background: var(--cor-limpar); }
+        .btn-imprimir { background: var(--cor-imprimir); }
+        .btn-padrao { background: var(--cor-padrao); }
+
+        /* RESULTADOS */
+        .res-destaque { 
+            background: var(--cor-mestra); 
+            color: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            text-align: center; 
+            margin-bottom: 15px; 
+        }
+        .res-destaque big { 
+            font-size: 2rem; 
+            font-weight: bold; 
+            display: block; 
+        }
+
+        /* Tabela de detalhamento */
+        .tabela-detalhe {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        .tabela-detalhe th {
+            background: #f0f4f8;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 2px solid var(--cor-mestra);
+        }
+        .tabela-detalhe td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .tabela-detalhe td:last-child, .tabela-detalhe th:last-child {
+            text-align: right;
+        }
+        .tabela-detalhe tr:last-child td {
+            border-bottom: none;
+            font-weight: bold;
+            background: #f9f9f9;
+        }
+        .tabela-detalhe .sub-item {
+            padding-left: 20px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        /* Gráfico de barras horizontais tradicionais */
+        .chart-container { 
+            height: 350px; 
+            margin-top: 15px; 
+        }
+
+        /* FÓRMULA */
+        .formula-box {
+            background: #f0f4f8;
+            border-left: 4px solid var(--cor-mestra);
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.85rem;
+        }
+        .formula-box p {
+            margin: 3px 0;
+        }
+        .formula {
+            font-weight: bold;
+            font-size: 1rem;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 8px 0;
+        }
+
+        /* RODAPÉ */
+        footer {
+            background: #222;
+            color: #ccc;
+            text-align: center;
+            padding: 20px 15px;
+            margin-top: 30px;
+            font-size: 0.8rem;
+        }
+        footer a { 
+            color: white; 
+            text-decoration: none; 
+            font-weight: bold; 
+        }
+        footer a:hover { 
+            text-decoration: underline; 
+        }
+
+        /* IMPRESSÃO - OTIMIZADA PARA ATÉ 2 PÁGINAS */
+        @media print {
+            * {
+                box-shadow: none !important;
+                text-shadow: none !important;
+                background: transparent !important;
+            }
+            body {
+                background: white;
+                font-size: 9pt;
+                margin: 0.3cm;
+                line-height: 1.3;
+            }
+            .no-print, .btn-whatsapp, button, .tooltip-icon, .checkbox-group, .botoes, .aviso {
+                display: none !important;
+            }
+            header {
+                background: white !important;
+                color: black;
+                border-bottom: 2px solid var(--cor-mestra);
+                padding: 0.2cm 0;
+                margin-bottom: 0.3cm;
+            }
+            .foto-perfil {
+                width: 60px;
+                height: 60px;
+                border: 1px solid #333;
+            }
+            .container {
+                display: block;
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .card {
+                border: 1px solid #aaa;
+                padding: 0.3cm;
+                margin-bottom: 0.4cm;
+                page-break-inside: auto;
+                break-inside: auto;
+                background: white !important;
+            }
+            h3 {
+                font-size: 11pt;
+                margin-bottom: 0.2cm;
+                border-bottom: 1px solid #333;
+            }
+            .grid-inputs {
+                display: block;
+            }
+            .input-group {
+                margin-bottom: 0.2cm;
+            }
+            input, select {
+                border: 1px solid #aaa;
+                padding: 0.1cm;
+                font-size: 8pt;
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .res-destaque {
+                background: #f0f0f0 !important;
+                color: black;
+                border: 1px solid #333;
+                padding: 0.2cm;
+                margin-bottom: 0.3cm;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .res-destaque big {
+                font-size: 14pt;
+            }
+            .tabela-detalhe {
+                font-size: 8pt;
+                width: 100%;
+            }
+            .tabela-detalhe th {
+                background: #ddd !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .chart-container {
+                height: 200px;
+                margin: 0.3cm 0;
+                page-break-inside: avoid;
+            }
+            .formula-box {
+                border-left: 2px solid #333;
+                background: #f9f9f9 !important;
+                padding: 0.2cm;
+                margin: 0.3cm 0;
+                font-size: 8pt;
+            }
+            .formula {
+                font-size: 9pt;
+                padding: 0.1cm;
+            }
+            footer {
+                background: white !important;
+                color: black;
+                border-top: 1px solid #ccc;
+                margin-top: 0.5cm;
+                padding: 0.2cm 0;
+                font-size: 7pt;
+            }
+            footer a {
+                color: black;
+            }
+            html, body {
+                height: auto;
+                overflow: visible;
+            }
+            @page {
+                size: A4;
+                margin: 0.5cm;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .container { 
+                grid-template-columns: 1fr; 
+            }
+            header { 
+                flex-direction: column; 
+                text-align: center; 
+            }
+            .header-info { 
+                align-items: center; 
+            }
+            .grid-inputs {
+                grid-template-columns: 1fr;
+            }
+            .botoes button {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="Executivo_Silvanio_Gestor.png" alt="Silvanio Gois" class="foto-perfil">
+    <div class="header-info">
+        <h1>Calculadora de BDI - vs.1-12/03/2026</h1>
+        <h2>Silvanio Gois - Gestão de Custos</h2>
+        <a href="https://wa.me/5513988301094" target="_blank" class="btn-whatsapp">
+            <i class="fab fa-whatsapp"></i> Contato WhatsApp
+        </a>
+    </div>
+</header>
+
+<!-- Tooltip customizado (invisível inicialmente) -->
+<div id="customTooltip" class="custom-tooltip"></div>
+
+<div class="container">
+    <section class="no-print">
+        <div class="card">
+            <h3>
+                <i class="fas fa-sliders-h"></i> Entradas de Custo
+                <span class="tooltip-icon" data-tooltip="Todos os valores percentuais devem estar na base do custo direto, exceto tributos que incidem sobre o preço de venda.">?</span>
+            </h3>
+            <div class="grid-inputs">
+                <div class="input-group" style="grid-column: span 2;">
+                    <label>
+                        <i class="fas fa-dollar-sign"></i> Custo Direto Total (R$)
+                        <span class="tooltip-icon" data-tooltip="Soma de materiais, mão de obra, equipamentos e serviços.">?</span>
+                    </label>
+                    <input type="number" id="cd" placeholder="0,00" min="0" step="0.01" value="100000">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Adm. Central (%)
+                        <span class="tooltip-icon" data-tooltip="Despesas da sede rateadas para a obra.">?</span>
+                    </label>
+                    <input type="number" id="ac" value="4.00" min="0" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Seguros/Garantia (%)
+                        <span class="tooltip-icon" data-tooltip="Prêmios de seguro e garantias contratuais.">?</span>
+                    </label>
+                    <input type="number" id="sg" value="0.80" min="0" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Riscos (%)
+                        <span class="tooltip-icon" data-tooltip="Provisão para contingências.">?</span>
+                    </label>
+                    <input type="number" id="r" value="1.00" min="0" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Desp. Financeiras (%)
+                        <span class="tooltip-icon" data-tooltip="Custo do capital de giro.">?</span>
+                    </label>
+                    <input type="number" id="df" value="1.20" min="0" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Lucro (L) (%)
+                        <span class="tooltip-icon" data-tooltip="Remuneração desejada antes dos tributos sobre o lucro (IRPJ/CSLL).">?</span>
+                    </label>
+                    <input type="number" id="l" value="7.00" min="0" step="0.01">
+                </div>
+
+                <!-- Regime Tributário -->
+                <div class="input-group" style="grid-column: span 2;">
+                    <label>
+                        <i class="fas fa-balance-scale"></i> Regime Tributário
+                        <span class="tooltip-icon" data-tooltip="Escolha o regime para ajustar automaticamente as alíquotas padrão. No Simples Nacional, a alíquota única substitui ISS, PIS, COFINS e CPRB, mas a CPRB deve ser paga à parte se houver desoneração.">?</span>
+                    </label>
+                    <select id="regime" onchange="ajustarRegime()">
+                        <option value="presumido" selected>Lucro Presumido (PIS 0,65% + COFINS 3,0%)</option>
+                        <option value="real">Lucro Real (PIS 1,65% + COFINS 7,6%)</option>
+                        <option value="simples">Simples Nacional (alíquota única)</option>
+                    </select>
+                </div>
+
+                <!-- Campos de impostos (serão dinâmicos conforme regime) -->
+                <div class="input-group" id="grupo-iss">
+                    <label>
+                        ISS (%)
+                        <span class="tooltip-icon" data-tooltip="Imposto municipal (2% a 5% típico). Em alguns municípios, incide apenas sobre a mão de obra – deduza materiais da base de cálculo para maior precisão.">?</span>
+                    </label>
+                    <input type="number" id="iss" value="5.00" min="0" max="100" step="0.01">
+                </div>
+                <div class="input-group" id="grupo-pc">
+                    <label>
+                        PIS + COFINS (%)
+                        <span class="tooltip-icon" data-tooltip="Tributos federais sobre faturamento. Ajustado conforme regime. No Lucro Presumido: 0,65%+3,0% = 3,65%. No Lucro Real: 1,65%+7,6% = 9,25%.">?</span>
+                    </label>
+                    <input type="number" id="pc" value="3.65" min="0" max="100" step="0.01">
+                </div>
+                <div class="input-group" style="grid-column: span 2;" id="grupo-cprb">
+                    <label>
+                        CPRB (%)
+                        <span class="tooltip-icon" data-tooltip="Contribuição Previdenciária sobre a Receita Bruta – desoneração da folha. Em obras desoneradas, a alíquota é de 4,5%.">?</span>
+                    </label>
+                    <input type="number" id="cprb" value="0" min="0" max="100" step="0.01">
+                </div>
+
+                <!-- Checkbox para desoneração (visível apenas se não for Simples) -->
+                <div class="checkbox-group" id="grupo-desonerado">
+                    <input type="checkbox" id="desonerado" onchange="toggleDesoneracao()">
+                    <label for="desonerado">Obra desonerada (CPRB 4,5%)</label>
+                </div>
+
+                <!-- Avisos contextuais -->
+                <div id="aviso-simples" class="aviso" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Atenção:</strong> A CPRB não está incluída no Simples Nacional. Se a obra for desonerada, lembre-se de adicionar a CPRB de 4,5% ao custo ou ao preço.
+                </div>
+                <div id="aviso-iss" class="aviso" style="display: none;">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Dica:</strong> Em muitos municípios, o ISS incide apenas sobre a mão de obra. Considere deduzir o valor dos materiais da base de cálculo para um orçamento mais preciso.
+                </div>
+            </div>
+
+            <div class="botoes">
+                <button onclick="calcular()" style="background: var(--cor-calcular);"><i class="fas fa-calculator"></i> Calcular</button>
+                <button class="btn-limpar" onclick="limparResultados()"><i class="fas fa-trash-alt"></i> Limpar</button>
+                <button class="btn-padrao" onclick="restaurarPadroes()"><i class="fas fa-undo-alt"></i> Padrões</button>
+                <button class="btn-imprimir" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="card">
+            <h3><i class="fas fa-chart-bar"></i> Resultado da Análise</h3>
+            <div class="res-destaque">
+                <span>BDI CALCULADO</span>
+                <big id="res-bdi">0.00%</big>
+            </div>
+            <div class="res-destaque" style="background: #27ae60;">
+                <span>PREÇO FINAL DE VENDA</span>
+                <big id="res-preco">R$ 0,00</big>
+            </div>
+            
+            <!-- Tabela de detalhamento com impostos separados -->
+            <h4 style="margin: 10px 0 5px; color: var(--cor-mestra);">Composição do Preço (em R$)</h4>
+            <table class="tabela-detalhe" id="tabela-detalhe">
+                <thead>
+                    <tr><th>Descrição</th><th>Valor (R$)</th><th>% do CD</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Custo Direto</td><td id="detalhe-cd">0,00</td><td>100,00%</td></tr>
+                    <tr><td>Administração Central</td><td id="detalhe-ac">0,00</td><td id="detalhe-ac-p">0,00%</td></tr>
+                    <tr><td>Seguros/Garantias</td><td id="detalhe-sg">0,00</td><td id="detalhe-sg-p">0,00%</td></tr>
+                    <tr><td>Riscos</td><td id="detalhe-r">0,00</td><td id="detalhe-r-p">0,00%</td></tr>
+                    <tr><td>Desp. Financeiras</td><td id="detalhe-df">0,00</td><td id="detalhe-df-p">0,00%</td></tr>
+                    <tr><td>Lucro</td><td id="detalhe-l">0,00</td><td id="detalhe-l-p">0,00%</td></tr>
+                    <tr><td><strong>Impostos</strong></td><td id="detalhe-impostos">0,00</td><td id="detalhe-impostos-p">0,00%</td></tr>
+                    <tr class="sub-item"><td>─ ISS</td><td id="detalhe-iss">0,00</td><td id="detalhe-iss-p">0,00%</td></tr>
+                    <tr class="sub-item"><td>─ PIS + COFINS</td><td id="detalhe-pc">0,00</td><td id="detalhe-pc-p">0,00%</td></tr>
+                    <tr class="sub-item"><td>─ CPRB</td><td id="detalhe-cprb">0,00</td><td id="detalhe-cprb-p">0,00%</td></tr>
+                    <tr style="background: #f0f4f8;"><td><strong>Preço de Venda</strong></td><td id="detalhe-pv"><strong>0,00</strong></td><td>-</td></tr>
+                </tbody>
+            </table>
+            
+            <div class="formula-box">
+                <p><strong>Fórmula (Acórdão 2622/2013 – TCU):</strong></p>
+                <p class="formula">
+                    BDI = { (1 + AC + SG + R) × (1 + DF) × (1 + L) / (1 - I) } - 1
+                </p>
+                <p>Onde: AC=Adm. Central, SG=Seguros, R=Riscos, DF=Desp.Financeiras, L=Lucro, I=ISS + PIS/COFINS + CPRB.</p>
+                <p><small>* O lucro é antes dos tributos sobre o lucro (IRPJ/CSLL).</small></p>
+            </div>
+            
+            <!-- Gráfico de barras horizontais tradicionais -->
+            <div class="chart-container">
+                <canvas id="bdiChart"></canvas>
+            </div>
+            <p style="font-size:0.75rem; color:#777; text-align:center;">Valores em Reais (R$) - Barras Horizontais</p>
+        </div>
+    </section>
+</div>
+
+<footer>
+    <p>© 2026 Silvanio Gois - Baseado no Acórdão 2622/2013 – TCU e NBR 12721</p>
+    <p><a href="https://www.silvaniogois.com.br/" target="_blank">Acesse meu site</a></p>
+</footer>
+
+<script>
+let myChart;
+const campos = ['cd', 'ac', 'sg', 'r', 'df', 'l', 'iss', 'pc', 'cprb'];
+
+// Tooltip customizado
+const tooltipEl = document.getElementById('customTooltip');
+let activeTooltipIcon = null;
+
+function showTooltip(event, text) {
+    const icon = event.currentTarget;
+    const rect = icon.getBoundingClientRect();
+    const tooltipWidth = 300; // max-width definido no CSS
+    const tooltipHeight = 100; // altura aproximada (vai variar, mas usamos para cálculo)
+    
+    // Posição inicial: acima do ícone
+    let top = rect.top - tooltipHeight - 10;
+    let left = rect.left + rect.width / 2 - tooltipWidth / 2;
+    let positionClass = 'top';
+
+    // Ajuste se ultrapassar o topo
+    if (top < 10) {
+        top = rect.bottom + 10;
+        positionClass = 'bottom';
+    }
+
+    // Ajuste horizontal
+    if (left < 10) {
+        left = 10;
+    } else if (left + tooltipWidth > window.innerWidth - 10) {
+        left = window.innerWidth - tooltipWidth - 10;
+    }
+
+    tooltipEl.textContent = text;
+    tooltipEl.className = `custom-tooltip ${positionClass} visible`;
+    tooltipEl.style.top = top + 'px';
+    tooltipEl.style.left = left + 'px';
+    activeTooltipIcon = icon;
+}
+
+function hideTooltip() {
+    tooltipEl.classList.remove('visible');
+    activeTooltipIcon = null;
+}
+
+// Adicionar eventos a todos os ícones de tooltip
+document.querySelectorAll('.tooltip-icon').forEach(icon => {
+    icon.addEventListener('mouseenter', (e) => showTooltip(e, icon.getAttribute('data-tooltip')));
+    icon.addEventListener('mouseleave', hideTooltip);
+});
+
+// Fechar tooltip ao rolar a página
+window.addEventListener('scroll', () => {
+    if (activeTooltipIcon) hideTooltip();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Carregar valores salvos
+    campos.forEach(id => {
+        const valor = localStorage.getItem(id);
+        if (valor !== null) document.getElementById(id).value = valor;
+    });
+    // Ajustar regime inicial
+    const pc = parseFloat(document.getElementById('pc').value);
+    if (pc > 4) document.getElementById('regime').value = 'real';
+    
+    // Verificar checkbox desonerado
+    const cprb = parseFloat(document.getElementById('cprb').value);
+    if (cprb === 4.5) document.getElementById('desonerado').checked = true;
+    
+    // Ajustar interface conforme regime
+    ajustarRegime();
+    calcular();
+});
+
+function ajustarRegime() {
+    const regime = document.getElementById('regime').value;
+    const grupoISS = document.getElementById('grupo-iss');
+    const grupoPC = document.getElementById('grupo-pc');
+    const grupoCPRB = document.getElementById('grupo-cprb');
+    const grupoDesonerado = document.getElementById('grupo-desonerado');
+    const avisoSimples = document.getElementById('aviso-simples');
+    const avisoISS = document.getElementById('aviso-iss');
+    
+    if (regime === 'simples') {
+        grupoISS.style.display = 'block';
+        grupoPC.style.display = 'none';
+        grupoCPRB.style.display = 'none';
+        grupoDesonerado.style.display = 'none';
+        avisoSimples.style.display = 'block';
+        
+        document.querySelector('#grupo-iss label').innerHTML = 'Alíquota Simples Nacional (%) <span class="tooltip-icon" data-tooltip="Alíquota única que substitui ISS, PIS, COFINS, mas a CPRB deve ser paga à parte se houver desoneração (4,5% sobre o faturamento). Ex: 6% para construção civil.">?</span>';
+        if (!document.getElementById('iss').value) document.getElementById('iss').value = '6.00';
+        document.getElementById('pc').value = '0';
+        document.getElementById('cprb').value = '0';
+    } else {
+        grupoISS.style.display = 'block';
+        grupoPC.style.display = 'block';
+        grupoCPRB.style.display = 'block';
+        grupoDesonerado.style.display = 'flex';
+        avisoSimples.style.display = 'none';
+        
+        document.querySelector('#grupo-iss label').innerHTML = 'ISS (%) <span class="tooltip-icon" data-tooltip="Imposto municipal (2% a 5% típico). Em alguns municípios, incide apenas sobre a mão de obra – deduza materiais da base de cálculo para maior precisão.">?</span>';
+        
+        if (regime === 'presumido') {
+            document.getElementById('pc').value = '3.65';
+        } else if (regime === 'real') {
+            document.getElementById('pc').value = '9.25';
+        }
+    }
+    
+    // Aviso do ISS (mostrar sempre que não for Simples, como dica)
+    if (regime !== 'simples') {
+        avisoISS.style.display = 'block';
+    } else {
+        avisoISS.style.display = 'none';
+    }
+    
+    calcular();
+}
+
+function toggleDesoneracao() {
+    const desonerado = document.getElementById('desonerado').checked;
+    const cprbInput = document.getElementById('cprb');
+    if (desonerado) {
+        cprbInput.value = '4.5';
+        cprbInput.disabled = true;
+    } else {
+        cprbInput.value = '0';
+        cprbInput.disabled = false;
+    }
+    calcular();
+}
+
+function validarCampos() {
+    let valido = true;
+    campos.forEach(id => {
+        const input = document.getElementById(id);
+        if (input.style.display !== 'none') {
+            const valor = parseFloat(input.value);
+            if (isNaN(valor) || valor < 0) {
+                input.classList.add('erro');
+                valido = false;
+            } else {
+                input.classList.remove('erro');
+            }
+        }
+    });
+    
+    // Validação específica para PIS/COFINS no Lucro Presumido
+    const regime = document.getElementById('regime').value;
+    if (regime === 'presumido') {
+        const pcInput = document.getElementById('pc');
+        const pcValor = parseFloat(pcInput.value) || 0;
+        if (Math.abs(pcValor - 3.65) > 0.01) {
+            if (!confirm('No Lucro Presumido, a alíquota padrão de PIS+COFINS é 3,65% (0,65% + 3,0%). Deseja manter o valor informado?')) {
+                pcInput.value = '3.65';
+            }
+        }
+    } else if (regime === 'real') {
+        const pcInput = document.getElementById('pc');
+        const pcValor = parseFloat(pcInput.value) || 0;
+        if (Math.abs(pcValor - 9.25) > 0.01) {
+            if (!confirm('No Lucro Real, a alíquota padrão de PIS+COFINS é 9,25% (1,65% + 7,6%). Deseja manter o valor informado?')) {
+                pcInput.value = '9.25';
+            }
+        }
+    }
+
+    const iss = (document.getElementById('grupo-iss').style.display !== 'none') ? (parseFloat(document.getElementById('iss').value) || 0) : 0;
+    const pc = (document.getElementById('grupo-pc').style.display !== 'none') ? (parseFloat(document.getElementById('pc').value) || 0) : 0;
+    const cprb = (document.getElementById('grupo-cprb').style.display !== 'none') ? (parseFloat(document.getElementById('cprb').value) || 0) : 0;
+    if (iss + pc + cprb >= 100) {
+        alert("A soma dos impostos (ISS + PIS/COFINS + CPRB) não pode ser igual ou superior a 100%.");
+        return false;
+    }
+    return valido;
+}
+
+function calcular() {
+    if (!validarCampos()) return;
+
+    const cd = parseFloat(document.getElementById('cd').value) || 0;
+    const ac = (parseFloat(document.getElementById('ac').value) || 0) / 100;
+    const sg = (parseFloat(document.getElementById('sg').value) || 0) / 100;
+    const r = (parseFloat(document.getElementById('r').value) || 0) / 100;
+    const df = (parseFloat(document.getElementById('df').value) || 0) / 100;
+    const l = (parseFloat(document.getElementById('l').value) || 0) / 100;
+    
+    let iss = 0, pc = 0, cprb = 0;
+    if (document.getElementById('grupo-iss').style.display !== 'none') {
+        iss = (parseFloat(document.getElementById('iss').value) || 0) / 100;
+    }
+    if (document.getElementById('grupo-pc').style.display !== 'none') {
+        pc = (parseFloat(document.getElementById('pc').value) || 0) / 100;
+    }
+    if (document.getElementById('grupo-cprb').style.display !== 'none') {
+        cprb = (parseFloat(document.getElementById('cprb').value) || 0) / 100;
+    }
+
+    const I = iss + pc + cprb;
+    if (I >= 1) {
+        alert("ERRO: A soma dos tributos é igual ou superior a 100%.");
+        return;
+    }
+
+    const bdi = ((1 + ac + sg + r) * (1 + df) * (1 + l)) / (1 - I) - 1;
+    const precoVenda = cd * (1 + bdi);
+
+    document.getElementById('res-bdi').innerText = (bdi * 100).toFixed(2) + '%';
+    document.getElementById('res-preco').innerText = precoVenda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    const valorAC = cd * ac;
+    const valorSG = cd * sg;
+    const valorR = cd * r;
+    const valorDF = cd * df;
+    const valorL = cd * l;
+    const valorISS = precoVenda * iss;
+    const valorPC = precoVenda * pc;
+    const valorCPRB = precoVenda * cprb;
+    const valorImpostos = valorISS + valorPC + valorCPRB;
+
+    document.getElementById('detalhe-cd').innerText = cd.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('detalhe-ac').innerText = valorAC.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('detalhe-ac-p').innerText = (ac * 100).toFixed(2) + '%';
+    document.getElementById('detalhe-sg').innerText = valorSG.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('detalhe-sg-p').innerText = (sg * 100).toFixed(2) + '%';
+    document.getElementById('detalhe-r').innerText = valorR.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('detalhe-r-p').innerText = (r * 100).toFixed(2) + '%';
+    document.getElementById('detalhe-df').innerText = valorDF.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('detalhe-df-p').innerText = (df * 100).toFixed(2) + '%';
+    document.getElementById('detalhe-l').innerText = valorL.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('detalhe-l-p').innerText = (l * 100).toFixed(2) + '%';
+    document.getElementById('detalhe-impostos').innerText = valorImpostos.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('detalhe-impostos-p').innerText = (I * 100).toFixed(2) + '%';
+    document.getElementById('detalhe-iss').innerText = valorISS.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('detalhe-iss-p').innerText = (iss * 100).toFixed(2) + '%';
+    document.getElementById('detalhe-pc').innerText = valorPC.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('detalhe-pc-p').innerText = (pc * 100).toFixed(2) + '%';
+    document.getElementById('detalhe-cprb').innerText = valorCPRB.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('detalhe-cprb-p').innerText = (cprb * 100).toFixed(2) + '%';
+    document.getElementById('detalhe-pv').innerHTML = '<strong>' + precoVenda.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</strong>';
+
+    updateChart(cd, valorAC, valorSG, valorR, valorDF, valorL, valorISS, valorPC, valorCPRB);
+
+    campos.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) localStorage.setItem(id, input.value);
+    });
+}
+
+function updateChart(cd, ac, sg, r, df, l, iss, pc, cprb) {
+    const ctx = document.getElementById('bdiChart').getContext('2d');
+    if (myChart) myChart.destroy();
+
+    const labels = [
+        'Custo Direto', 'Adm. Central', 'Seguros', 'Riscos', 
+        'Desp. Finan.', 'Lucro', 'ISS', 'PIS+COFINS', 'CPRB'
+    ];
+    const data = [cd, ac, sg, r, df, l, iss, pc, cprb];
+    const backgroundColor = [
+        '#2c3e50', '#3498db', '#f1c40f', '#e67e22', 
+        '#1abc9c', '#9b59b6', '#e74c3c', '#c0392b', '#d35400'
+    ];
+
+    const filteredLabels = [];
+    const filteredData = [];
+    const filteredColors = [];
+    for (let i = 0; i < data.length; i++) {
+        if (data[i] > 0) {
+            filteredLabels.push(labels[i]);
+            filteredData.push(data[i]);
+            filteredColors.push(backgroundColor[i]);
+        }
+    }
+
+    if (filteredData.length === 0) {
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: ['Sem dados'], datasets: [{ data: [0] }] },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+        return;
+    }
+
+    myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: filteredLabels,
+            datasets: [{
+                data: filteredData,
+                backgroundColor: filteredColors,
+                borderColor: 'rgba(0,0,0,0.1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => `${ctx.raw.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        callback: (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                    }
+                }
+            }
+        }
+    });
+}
+
+function limparResultados() {
+    document.getElementById('res-bdi').innerText = '0.00%';
+    document.getElementById('res-preco').innerText = 'R$ 0,00';
+    const zeros = '0,00';
+    const zeroP = '0,00%';
+    document.getElementById('detalhe-cd').innerText = zeros;
+    document.getElementById('detalhe-ac').innerText = zeros;
+    document.getElementById('detalhe-ac-p').innerText = zeroP;
+    document.getElementById('detalhe-sg').innerText = zeros;
+    document.getElementById('detalhe-sg-p').innerText = zeroP;
+    document.getElementById('detalhe-r').innerText = zeros;
+    document.getElementById('detalhe-r-p').innerText = zeroP;
+    document.getElementById('detalhe-df').innerText = zeros;
+    document.getElementById('detalhe-df-p').innerText = zeroP;
+    document.getElementById('detalhe-l').innerText = zeros;
+    document.getElementById('detalhe-l-p').innerText = zeroP;
+    document.getElementById('detalhe-impostos').innerText = zeros;
+    document.getElementById('detalhe-impostos-p').innerText = zeroP;
+    document.getElementById('detalhe-iss').innerText = zeros;
+    document.getElementById('detalhe-iss-p').innerText = zeroP;
+    document.getElementById('detalhe-pc').innerText = zeros;
+    document.getElementById('detalhe-pc-p').innerText = zeroP;
+    document.getElementById('detalhe-cprb').innerText = zeros;
+    document.getElementById('detalhe-cprb-p').innerText = zeroP;
+    document.getElementById('detalhe-pv').innerHTML = '<strong>0,00</strong>';
+    updateChart(0, 0, 0, 0, 0, 0, 0, 0, 0);
+}
+
+function restaurarPadroes() {
+    document.getElementById('cd').value = '100000';
+    document.getElementById('ac').value = '4.00';
+    document.getElementById('sg').value = '0.80';
+    document.getElementById('r').value = '1.00';
+    document.getElementById('df').value = '1.20';
+    document.getElementById('l').value = '7.00';
+    document.getElementById('regime').value = 'presumido';
+    ajustarRegime();
+    document.getElementById('iss').value = '5.00';
+    document.getElementById('desonerado').checked = false;
+    document.getElementById('cprb').disabled = false;
+    calcular();
+}
+</script>
+</body>
+</html>
